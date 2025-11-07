@@ -2,7 +2,6 @@ import { LitElement, html, css } from 'lit';
 import { AudioProcessor } from '../audio/audio-processor.js';
 import { ReferencePlayer } from '../audio/reference-player.js';
 import { frequencyToNote, generateReferenceNotes, parseNoteString, noteToFrequency } from '../utils/note-converter.js';
-import { detectHeadphones } from '../utils/headphone-detector.js';
 import './visual-metronome.js';
 
 export class VoiceMonitor extends LitElement {
@@ -145,15 +144,15 @@ export class VoiceMonitor extends LitElement {
       // Trying to enable monitoring - check for headphones
       // Pass the existing audio stream to avoid requesting permission twice
       const stream = this.audioProcessor?.stream;
-      const hasHeadphones = await detectHeadphones(stream);
+      // const hasHeadphones = await detectHeadphones(stream);
 
-      if (!hasHeadphones) {
-        this.showHeadphoneWarning = true;
-        setTimeout(() => {
-          this.showHeadphoneWarning = false;
-        }, 3000);
-        return;
-      }
+      // if (!hasHeadphones) {
+      //   this.showHeadphoneWarning = true;
+      //   setTimeout(() => {
+      //     this.showHeadphoneWarning = false;
+      //   }, 3000);
+      //   return;
+      // }
 
       this.audioProcessor?.enableMonitoring();
       this.monitoringEnabled = true;
