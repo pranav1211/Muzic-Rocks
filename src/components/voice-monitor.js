@@ -143,8 +143,10 @@ export class VoiceMonitor extends LitElement {
   async toggleMonitoring() {
     if (!this.monitoringEnabled) {
       // Trying to enable monitoring - check for headphones
-      const hasHeadphones = await detectHeadphones();
-      
+      // Pass the existing audio stream to avoid requesting permission twice
+      const stream = this.audioProcessor?.stream;
+      const hasHeadphones = await detectHeadphones(stream);
+
       if (!hasHeadphones) {
         this.showHeadphoneWarning = true;
         setTimeout(() => {
@@ -152,7 +154,7 @@ export class VoiceMonitor extends LitElement {
         }, 3000);
         return;
       }
-      
+
       this.audioProcessor?.enableMonitoring();
       this.monitoringEnabled = true;
     } else {
