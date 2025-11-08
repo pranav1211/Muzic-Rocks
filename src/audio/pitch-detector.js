@@ -27,7 +27,7 @@ export class PitchDetector {
     rms = Math.sqrt(rms / SIZE);
     
     // If too quiet, no pitch
-    if (rms < 0.05) return -1;
+    if (rms < 0.03) return -1;
     
     // Find the best autocorrelation offset
     let lastCorrelation = 1;
