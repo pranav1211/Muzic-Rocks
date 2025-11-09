@@ -252,15 +252,15 @@ export class VisualMetronome extends LitElement {
 
     if (isActive) {
       if (isDownbeat) {
-        classes += 'w-5 h-5 ';
-        classes += this.isDarkMode ? 'bg-blue-500' : 'bg-blue-700';
+        classes += 'w-8 h-8 sm:w-10 sm:h-10 shadow-lg ';
+        classes += this.isDarkMode ? 'bg-green-500 ring-4 ring-green-400/50' : 'bg-green-600 ring-4 ring-green-300';
       } else {
-        classes += 'w-4 h-4 ';
-        classes += this.isDarkMode ? 'bg-blue-400' : 'bg-blue-600';
+        classes += 'w-6 h-6 sm:w-8 sm:h-8 shadow-md ';
+        classes += this.isDarkMode ? 'bg-green-400 ring-2 ring-green-300/50' : 'bg-green-500 ring-2 ring-green-200';
       }
     } else {
-      classes += 'w-4 h-4 border-2 ';
-      classes += this.isDarkMode ? 'border-gray-600' : 'border-gray-300';
+      classes += 'w-6 h-6 sm:w-8 sm:h-8 border-2 ';
+      classes += this.isDarkMode ? 'border-gray-600 bg-gray-800' : 'border-gray-300 bg-gray-100';
     }
 
     return classes;
@@ -272,115 +272,146 @@ export class VisualMetronome extends LitElement {
 
     return html`
       <div
-        class="w-full ${this.isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} border-b ${this.isDarkMode ? 'border-gray-800' : 'border-gray-200'} py-3"
+        class="w-full p-4 sm:p-6"
         role="region"
         aria-label="Visual Metronome"
       >
-        <div class="max-w-md mx-auto px-6">
-          <div class="flex items-center justify-between gap-4">
+        <!-- Beat Visualization -->
+        <div class="flex justify-center mb-6">
+          <div class="flex items-center gap-3 sm:gap-4" role="status" aria-live="polite">
+            ${dots.map(beat => html`
+              <div
+                class="${this.getDotClass(beat)}"
+                role="img"
+                aria-label="${beat === this.currentBeat && this.isActive ? `Beat ${beat} active` : `Beat ${beat}`}"
+              ></div>
+            `)}
+          </div>
+        </div>
 
-            <!-- Dots Display -->
-            <div class="flex items-center gap-2" role="status" aria-live="polite">
-              ${dots.map(beat => html`
-                <div
-                  class="${this.getDotClass(beat)}"
-                  role="img"
-                  aria-label="${beat === this.currentBeat && this.isActive ? `Beat ${beat} active` : `Beat ${beat}`}"
-                ></div>
-              `)}
-            </div>
+        <!-- BPM Display -->
+        <div class="text-center mb-6">
+          <div class="${this.isDarkMode ? 'text-green-400' : 'text-green-600'} text-xs font-medium uppercase tracking-wide mb-1">
+            Tempo
+          </div>
+          <div class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-5xl sm:text-6xl font-bold font-mono">
+            ${this.bpm}
+          </div>
+          <div class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-1">
+            BPM
+          </div>
+        </div>
 
-            <!-- Controls -->
-            <div class="flex items-center gap-2">
+        <!-- Controls Grid -->
+        <div class="space-y-4">
 
-              <!-- Time Signature Selector -->
-              <select
-                .value=${this.timeSignature}
-                @change=${this.handleTimeSignatureChange}
-                class="px-2 py-1 rounded border text-sm ${
-                  this.isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Time signature selector"
-              >
-                <option value="4/4">4/4</option>
-                <option value="8/8">8/8</option>
-              </select>
+          <!-- BPM Controls -->
+          <div class="flex items-center justify-center gap-3">
+            <button
+              @mousedown=${() => this.handleBpmMouseDown(-10)}
+              @touchstart=${() => this.handleBpmMouseDown(-10)}
+              class="px-4 py-3 rounded-xl ${
+                this.isDarkMode
+                  ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+              } font-bold transition-colors shadow-md"
+              aria-label="Decrease tempo by 10 BPM"
+            >
+              −10
+            </button>
 
-              <!-- BPM Controls -->
-              <div class="flex items-center gap-1" role="group" aria-label="Tempo controls">
-                <button
-                  @mousedown=${() => this.handleBpmMouseDown(-1)}
-                  @touchstart=${() => this.handleBpmMouseDown(-1)}
-                  class="w-8 h-8 rounded ${
-                    this.isDarkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                  } font-bold transition-colors"
-                  aria-label="Decrease tempo by 1 BPM"
-                >
-                  -
-                </button>
+            <button
+              @mousedown=${() => this.handleBpmMouseDown(-1)}
+              @touchstart=${() => this.handleBpmMouseDown(-1)}
+              class="px-6 py-3 rounded-xl ${
+                this.isDarkMode
+                  ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+              } font-bold transition-colors text-xl shadow-md"
+              aria-label="Decrease tempo by 1 BPM"
+            >
+              −
+            </button>
 
-                <div
-                  class="w-12 text-center ${
-                    this.isDarkMode ? 'text-white' : 'text-gray-900'
-                  } text-sm font-medium"
-                  role="status"
-                  aria-label="${this.bpm} beats per minute"
-                >
-                  ${this.bpm}
-                </div>
+            <button
+              @mousedown=${() => this.handleBpmMouseDown(1)}
+              @touchstart=${() => this.handleBpmMouseDown(1)}
+              class="px-6 py-3 rounded-xl ${
+                this.isDarkMode
+                  ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+              } font-bold transition-colors text-xl shadow-md"
+              aria-label="Increase tempo by 1 BPM"
+            >
+              +
+            </button>
 
-                <button
-                  @mousedown=${() => this.handleBpmMouseDown(1)}
-                  @touchstart=${() => this.handleBpmMouseDown(1)}
-                  class="w-8 h-8 rounded ${
-                    this.isDarkMode
-                      ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                  } font-bold transition-colors"
-                  aria-label="Increase tempo by 1 BPM"
-                >
-                  +
-                </button>
-              </div>
+            <button
+              @mousedown=${() => this.handleBpmMouseDown(10)}
+              @touchstart=${() => this.handleBpmMouseDown(10)}
+              class="px-4 py-3 rounded-xl ${
+                this.isDarkMode
+                  ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+              } font-bold transition-colors shadow-md"
+              aria-label="Increase tempo by 10 BPM"
+            >
+              +10
+            </button>
+          </div>
 
-              <!-- Sound Toggle -->
-              <button
-                @click=${this.toggleSound}
-                class="w-8 h-8 rounded ${
-                  this.soundEnabled
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : this.isDarkMode
-                    ? 'bg-gray-700 hover:bg-gray-600'
-                    : 'bg-gray-200 hover:bg-gray-300'
-                } ${this.isDarkMode || this.soundEnabled ? 'text-white' : 'text-gray-900'} transition-colors flex items-center justify-center text-lg"
-                aria-label="${this.soundEnabled ? 'Sound enabled, click to disable' : 'Sound disabled, click to enable'}"
-                aria-pressed="${this.soundEnabled}"
-              >
-                ${this.soundEnabled ? '🔊' : '🔇'}
-              </button>
+          <!-- Action Buttons -->
+          <div class="flex items-center justify-center gap-3">
 
-              <!-- Play/Pause Button -->
-              <button
-                @click=${this.toggleMetronome}
-                class="w-10 h-8 rounded ${
-                  this.isActive
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : this.isDarkMode
-                    ? 'bg-gray-700 hover:bg-gray-600'
-                    : 'bg-gray-200 hover:bg-gray-300'
-                } text-white transition-colors flex items-center justify-center"
-                aria-label="${this.isActive ? 'Pause metronome' : 'Start metronome'}"
-                aria-pressed="${this.isActive}"
-              >
-                ${this.isActive ? '⏸' : '▶'}
-              </button>
-            </div>
+            <!-- Time Signature -->
+            <select
+              .value=${this.timeSignature}
+              @change=${this.handleTimeSignatureChange}
+              class="flex-1 sm:flex-initial px-4 py-3 rounded-xl border-2 font-medium ${
+                this.isDarkMode
+                  ? 'bg-gray-800 border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md"
+              aria-label="Time signature selector"
+            >
+              <option value="4/4">4/4 Time</option>
+              <option value="8/8">8/8 Time</option>
+            </select>
+
+            <!-- Sound Toggle -->
+            <button
+              @click=${this.toggleSound}
+              class="flex-1 sm:flex-initial px-4 py-3 rounded-xl ${
+                this.soundEnabled
+                  ? 'bg-green-600 hover:bg-green-700 ring-2 ring-green-400'
+                  : this.isDarkMode
+                  ? 'bg-gray-800 hover:bg-gray-700'
+                  : 'bg-gray-200 hover:bg-gray-300'
+              } ${this.isDarkMode || this.soundEnabled ? 'text-white' : 'text-gray-900'} transition-all flex items-center justify-center gap-2 font-medium shadow-md"
+              aria-label="${this.soundEnabled ? 'Sound enabled, click to disable' : 'Sound disabled, click to enable'}"
+              aria-pressed="${this.soundEnabled}"
+            >
+              <span class="text-xl">${this.soundEnabled ? '🔊' : '🔇'}</span>
+              <span class="hidden sm:inline">${this.soundEnabled ? 'Sound On' : 'Sound Off'}</span>
+            </button>
 
           </div>
+
+          <!-- Play/Pause Button -->
+          <button
+            @click=${this.toggleMetronome}
+            class="w-full py-4 rounded-xl ${
+              this.isActive
+                ? 'bg-red-600 hover:bg-red-700 ring-2 ring-red-400'
+                : 'bg-green-600 hover:bg-green-700 ring-2 ring-green-400'
+            } text-white transition-all flex items-center justify-center gap-2 text-lg font-semibold shadow-lg hover:shadow-xl"
+            aria-label="${this.isActive ? 'Pause metronome' : 'Start metronome'}"
+            aria-pressed="${this.isActive}"
+          >
+            <span class="text-2xl">${this.isActive ? '⏸' : '▶'}</span>
+            <span>${this.isActive ? 'Stop Metronome' : 'Start Metronome'}</span>
+          </button>
+
         </div>
       </div>
     `;

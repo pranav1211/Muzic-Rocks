@@ -69,36 +69,85 @@ export class MuzicApp extends LitElement {
 
   render() {
     return html`
-      <div class="min-h-screen ${this.isDarkMode ? 'bg-gray-900' : 'bg-white'}">
+      <div class="min-h-screen ${this.isDarkMode ? 'bg-gray-950' : 'bg-gradient-to-br from-blue-50 to-purple-50'}">
 
         <!-- Header -->
-        <header class="border-b ${this.isDarkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'} py-4">
-          <div class="max-w-4xl mx-auto px-6">
-            <h1 class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-2xl font-bold">
-              Muzic Rocks
-            </h1>
-            <p class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-1">
-              Voice training and pitch monitoring tools
-            </p>
+        <header class="sticky top-0 z-10 backdrop-blur-lg ${this.isDarkMode ? 'bg-gray-900/80 border-gray-800' : 'bg-white/80 border-gray-200'} border-b shadow-sm">
+          <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-xl sm:text-2xl font-bold tracking-tight">
+                  🎵 Muzic Rocks
+                </h1>
+                <p class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs sm:text-sm mt-0.5">
+                  Professional Voice Training Suite
+                </p>
+              </div>
+              <div class="${this.isDarkMode ? 'bg-gray-800' : 'bg-blue-100'} px-3 py-1.5 rounded-full">
+                <span class="${this.isDarkMode ? 'text-blue-400' : 'text-blue-700'} text-xs font-medium">
+                  ${this.isDarkMode ? '🌙 Dark' : '☀️ Light'}
+                </span>
+              </div>
+            </div>
           </div>
         </header>
 
-        <!-- Visual Metronome -->
-        <visual-metronome></visual-metronome>
+        <!-- Main Content Area -->
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-        <!-- Pitch Detector -->
-        <pitch-detector></pitch-detector>
+          <!-- Pitch Monitor Section -->
+          <section class="${this.isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} rounded-2xl border shadow-lg overflow-hidden">
+            <div class="${this.isDarkMode ? 'bg-gradient-to-r from-purple-900/50 to-blue-900/50 border-gray-800' : 'bg-gradient-to-r from-purple-100 to-blue-100 border-gray-200'} border-b px-4 sm:px-6 py-3">
+              <h2 class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-lg font-semibold flex items-center gap-2">
+                <span class="text-xl">🎤</span>
+                Pitch Monitor
+              </h2>
+              <p class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mt-0.5">
+                Real-time frequency detection
+              </p>
+            </div>
+            <pitch-detector></pitch-detector>
+          </section>
 
-        <!-- Note Player -->
-        <note-player></note-player>
+          <!-- Metronome Section -->
+          <section class="${this.isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} rounded-2xl border shadow-lg overflow-hidden">
+            <div class="${this.isDarkMode ? 'bg-gradient-to-r from-green-900/50 to-teal-900/50 border-gray-800' : 'bg-gradient-to-r from-green-100 to-teal-100 border-gray-200'} border-b px-4 sm:px-6 py-3">
+              <h2 class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-lg font-semibold flex items-center gap-2">
+                <span class="text-xl">⏱️</span>
+                Visual Metronome
+              </h2>
+              <p class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mt-0.5">
+                Keep perfect timing
+              </p>
+            </div>
+            <visual-metronome></visual-metronome>
+          </section>
+
+          <!-- Note Player Section -->
+          <section class="${this.isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} rounded-2xl border shadow-lg overflow-hidden">
+            <div class="${this.isDarkMode ? 'bg-gradient-to-r from-orange-900/50 to-red-900/50 border-gray-800' : 'bg-gradient-to-r from-orange-100 to-red-100 border-gray-200'} border-b px-4 sm:px-6 py-3">
+              <h2 class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-lg font-semibold flex items-center gap-2">
+                <span class="text-xl">🎹</span>
+                Note Player
+              </h2>
+              <p class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mt-0.5">
+                Practice with reference tones
+              </p>
+            </div>
+            <note-player></note-player>
+          </section>
+
+        </main>
 
         <!-- Playback Module (hidden, used programmatically) -->
-        <playback-module></playback-module>
+        <playback-module style="display: none;"></playback-module>
 
         <!-- Footer -->
-        <footer class="mt-8 py-6 ${this.isDarkMode ? 'text-gray-500' : 'text-gray-600'} text-center text-sm">
-          <div class="max-w-4xl mx-auto px-6">
-            <p>All components are independent and modular</p>
+        <footer class="mt-12 pb-8 ${this.isDarkMode ? 'text-gray-600' : 'text-gray-500'} text-center">
+          <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <p class="text-xs">
+              Independent modular components • Built with Web Components
+            </p>
           </div>
         </footer>
 

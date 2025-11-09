@@ -141,15 +141,15 @@ export class NotePlayer extends LitElement {
     const isPlaying = this.playingNote === noteName;
     const isBlack = this.isBlackKey(noteName);
 
-    let classes = 'px-4 py-3 rounded-lg font-medium transition-all duration-150 ';
+    let classes = 'px-3 py-4 sm:px-4 sm:py-5 rounded-xl font-semibold transition-all duration-150 shadow-md hover:shadow-lg ';
 
     if (isPlaying) {
       // Playing state
-      classes += 'ring-2 ring-blue-500 ';
+      classes += 'ring-4 ring-orange-400 ';
       if (isBlack) {
-        classes += 'bg-blue-600 text-white scale-95 ';
+        classes += 'bg-orange-600 text-white scale-95 ';
       } else {
-        classes += 'bg-blue-500 text-white scale-95 ';
+        classes += 'bg-orange-500 text-white scale-95 ';
       }
     } else {
       // Normal state
@@ -161,12 +161,12 @@ export class NotePlayer extends LitElement {
       } else {
         // White keys (naturals)
         classes += this.isDarkMode
-          ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 '
-          : 'bg-white hover:bg-gray-100 text-gray-900 border border-gray-300 ';
+          ? 'bg-gray-800 hover:bg-gray-700 text-white border-2 border-gray-700 '
+          : 'bg-white hover:bg-gray-100 text-gray-900 border-2 border-gray-300 ';
       }
     }
 
-    classes += 'active:scale-90 focus:outline-none focus:ring-2 focus:ring-blue-500';
+    classes += 'active:scale-90 focus:outline-none focus:ring-2 focus:ring-orange-500';
 
     return classes;
   }
@@ -177,88 +177,90 @@ export class NotePlayer extends LitElement {
 
     return html`
       <div
-        class="w-full ${this.isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} border-b ${this.isDarkMode ? 'border-gray-800' : 'border-gray-200'} py-4"
+        class="w-full p-4 sm:p-6"
         role="region"
         aria-label="Note Player"
       >
-        <div class="max-w-4xl mx-auto px-6">
-
-          <!-- Header with Octave Selector -->
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} text-lg font-semibold">
-              Note Player
-            </h3>
-
-            <div class="flex items-center gap-2">
-              <label
-                for="octave-select"
-                class="${this.isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-sm font-medium"
-              >
-                Octave:
-              </label>
-              <select
-                id="octave-select"
-                .value=${this.selectedOctave.toString()}
-                @change=${this.handleOctaveChange}
-                class="px-3 py-1 rounded border ${
-                  this.isDarkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Select octave"
-              >
-                ${octaves.map(octave => html`
-                  <option value="${octave}">
-                    C${octave} - B${octave}
-                  </option>
-                `)}
-              </select>
-            </div>
+        <!-- Octave Selector -->
+        <div class="mb-6">
+          <div class="${this.isDarkMode ? 'text-orange-400' : 'text-orange-600'} text-xs font-medium uppercase tracking-wide mb-2 text-center">
+            Select Octave
           </div>
-
-          <!-- Note Buttons Grid -->
-          <div
-            class="grid grid-cols-6 gap-2"
-            role="group"
-            aria-label="Note buttons for octave ${this.selectedOctave}"
-          >
-            ${this.notes.map(noteName => html`
+          <div class="flex items-center justify-center gap-2">
+            ${octaves.map(octave => html`
               <button
-                @click=${() => this.playNote(noteName)}
-                class="${this.getNoteButtonClass(noteName)}"
-                aria-label="Play ${noteName}${this.selectedOctave}"
-                aria-pressed="${this.playingNote === noteName}"
+                @click=${() => { this.selectedOctave = octave; this.saveSettings(); }}
+                class="px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-semibold transition-all ${
+                  this.selectedOctave === octave
+                    ? 'bg-orange-600 text-white ring-2 ring-orange-400 shadow-lg scale-105'
+                    : this.isDarkMode
+                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }"
+                aria-label="Select octave ${octave}"
+                aria-pressed="${this.selectedOctave === octave}"
               >
-                <div class="text-center">
-                  <div class="text-base font-semibold">${noteName}</div>
-                  <div class="text-xs opacity-75">${this.selectedOctave}</div>
-                </div>
+                ${octave}
               </button>
             `)}
           </div>
+        </div>
 
-          <!-- Stop Button -->
-          ${this.playingNote ? html`
-            <div class="mt-3 text-center">
-              <button
-                @click=${this.stopNote}
-                class="px-6 py-2 rounded ${
-                  this.isDarkMode
-                    ? 'bg-red-700 hover:bg-red-600'
-                    : 'bg-red-600 hover:bg-red-700'
-                } text-white font-medium transition-colors"
-                aria-label="Stop playing note"
-              >
-                Stop
-              </button>
-            </div>
-          ` : ''}
-
-          <!-- Instructions -->
-          <div class="mt-3 ${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center">
-            Click any note to play. The octave selector changes which octave of notes you're playing.
+        <!-- Currently Selected Info -->
+        <div class="text-center mb-4">
+          <div class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm">
+            Playing octave: <span class="font-semibold ${this.isDarkMode ? 'text-white' : 'text-gray-900'}">C${this.selectedOctave} - B${this.selectedOctave}</span>
           </div>
         </div>
+
+        <!-- Note Buttons Grid -->
+        <div
+          class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-3"
+          role="group"
+          aria-label="Note buttons for octave ${this.selectedOctave}"
+        >
+          ${this.notes.map(noteName => html`
+            <button
+              @click=${() => this.playNote(noteName)}
+              class="${this.getNoteButtonClass(noteName)}"
+              aria-label="Play ${noteName}${this.selectedOctave}"
+              aria-pressed="${this.playingNote === noteName}"
+            >
+              <div class="text-center">
+                <div class="text-lg sm:text-xl font-bold">${noteName}</div>
+                ${this.playingNote === noteName ? html`
+                  <div class="text-xs mt-1 animate-pulse">♫</div>
+                ` : ''}
+              </div>
+            </button>
+          `)}
+        </div>
+
+        <!-- Stop Button -->
+        ${this.playingNote ? html`
+          <div class="mt-6 text-center">
+            <button
+              @click=${this.stopNote}
+              class="px-8 py-3 rounded-xl ${
+                this.isDarkMode
+                  ? 'bg-red-700 hover:bg-red-600'
+                  : 'bg-red-600 hover:bg-red-700'
+              } text-white font-semibold transition-all shadow-lg hover:shadow-xl ring-2 ring-red-400"
+              aria-label="Stop playing note"
+            >
+              ⏹ Stop Playing
+            </button>
+          </div>
+        ` : ''}
+
+        <!-- Playing Indicator -->
+        ${this.playingNote ? html`
+          <div class="mt-4 text-center">
+            <div class="${this.isDarkMode ? 'text-orange-400' : 'text-orange-600'} text-lg font-semibold">
+              🎵 Now Playing: ${this.playingNote}${this.selectedOctave}
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
   }

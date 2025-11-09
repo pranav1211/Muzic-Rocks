@@ -271,81 +271,118 @@ export class PitchDetector extends LitElement {
   render() {
     return html`
       <div
-        class="w-full ${this.isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} border-b ${this.isDarkMode ? 'border-gray-800' : 'border-gray-200'} py-3"
+        class="w-full p-4 sm:p-6"
         role="region"
         aria-label="Pitch Detector"
       >
-        <div class="max-w-md mx-auto px-6">
-          <div class="flex items-center justify-between gap-4">
+        <!-- Main Control Area -->
+        <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
 
-            <!-- Frequency Display -->
-            <div class="flex-1">
-              ${this.currentFrequency
-                ? html`
-                  <div class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} font-mono text-lg">
+          <!-- Frequency Display -->
+          <div class="flex-1 w-full sm:w-auto text-center sm:text-left">
+            ${this.currentFrequency
+              ? html`
+                <div class="space-y-1">
+                  <div class="${this.isDarkMode ? 'text-blue-400' : 'text-blue-600'} text-xs font-medium uppercase tracking-wide">
+                    Detected Frequency
+                  </div>
+                  <div class="${this.isDarkMode ? 'text-white' : 'text-gray-900'} font-mono text-4xl sm:text-5xl font-bold tracking-tight">
                     <span role="status" aria-live="polite">
-                      ${this.currentFrequency.toFixed(2)} Hz
+                      ${this.currentFrequency.toFixed(1)}
                     </span>
+                    <span class="text-2xl sm:text-3xl ${this.isDarkMode ? 'text-gray-500' : 'text-gray-400'} ml-1">Hz</span>
                   </div>
-                `
-                : html`
-                  <div class="${this.isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-sm">
-                    ${this.isActive ? 'Listening...' : 'Not active'}
+                  <div class="${this.isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm">
+                    ${this.getNoteFromFrequency(this.currentFrequency)}
                   </div>
-                `
-              }
-            </div>
-
-            <!-- Controls -->
-            <div class="flex items-center gap-2">
-
-              <!-- Monitoring Toggle (only show when active) -->
-              ${this.isActive ? html`
-                <button
-                  @click=${this.toggleMonitoring}
-                  class="w-8 h-8 rounded ${
-                    this.isMonitoring
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : this.isDarkMode
-                      ? 'bg-gray-700 hover:bg-gray-600'
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  } ${this.isDarkMode || this.isMonitoring ? 'text-white' : 'text-gray-900'} transition-colors flex items-center justify-center text-sm"
-                  aria-label="${this.isMonitoring ? 'Monitoring enabled, click to disable' : 'Monitoring disabled, click to enable'}"
-                  aria-pressed="${this.isMonitoring}"
-                  title="${this.isMonitoring ? 'Disable monitoring (you won\'t hear yourself)' : 'Enable monitoring (hear yourself through speakers)'}"
-                >
-                  🎧
-                </button>
-              ` : ''}
-
-              <!-- Start/Stop Button -->
-              <button
-                @click=${this.toggle}
-                class="px-4 py-2 rounded ${
-                  this.isActive
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
-                } text-white transition-colors font-medium"
-                aria-label="${this.isActive ? 'Stop pitch detection' : 'Start pitch detection'}"
-              >
-                ${this.isActive ? 'Stop' : 'Start'}
-              </button>
-            </div>
-
+                </div>
+              `
+              : html`
+                <div class="py-4">
+                  <div class="${this.isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-lg">
+                    ${this.isActive ? '🎤 Listening for input...' : '🎵 Ready to detect pitch'}
+                  </div>
+                </div>
+              `
+            }
           </div>
 
-          <!-- Error Message -->
-          ${this.errorMessage ? html`
-            <div
-              class="mt-2 text-sm ${this.isDarkMode ? 'text-red-400' : 'text-red-600'}"
-              role="alert"
+          <!-- Controls -->
+          <div class="flex items-center gap-3 w-full sm:w-auto justify-center">
+
+            <!-- Monitoring Toggle (only show when active) -->
+            ${this.isActive ? html`
+              <button
+                @click=${this.toggleMonitoring}
+                class="flex-1 sm:flex-initial px-4 py-3 rounded-xl ${
+                  this.isMonitoring
+                    ? 'bg-green-600 hover:bg-green-700 ring-2 ring-green-400'
+                    : this.isDarkMode
+                    ? 'bg-gray-800 hover:bg-gray-700'
+                    : 'bg-gray-200 hover:bg-gray-300'
+                } ${this.isDarkMode || this.isMonitoring ? 'text-white' : 'text-gray-900'} transition-all flex items-center justify-center gap-2 font-medium text-sm"
+                aria-label="${this.isMonitoring ? 'Monitoring enabled, click to disable' : 'Monitoring disabled, click to enable'}"
+                aria-pressed="${this.isMonitoring}"
+                title="${this.isMonitoring ? 'Disable monitoring (you won\'t hear yourself)' : 'Enable monitoring (hear yourself through speakers)'}"
+              >
+                <span class="text-lg">🎧</span>
+                <span class="hidden sm:inline">Monitor</span>
+              </button>
+            ` : ''}
+
+            <!-- Start/Stop Button -->
+            <button
+              @click=${this.toggle}
+              class="flex-1 sm:flex-initial px-6 py-3 rounded-xl ${
+                this.isActive
+                  ? 'bg-red-600 hover:bg-red-700 ring-2 ring-red-400'
+                  : 'bg-blue-600 hover:bg-blue-700 ring-2 ring-blue-400'
+              } text-white transition-all font-semibold shadow-lg hover:shadow-xl"
+              aria-label="${this.isActive ? 'Stop pitch detection' : 'Start pitch detection'}"
             >
-              ${this.errorMessage}
-            </div>
-          ` : ''}
+              ${this.isActive ? '⏹ Stop' : '▶ Start Detection'}
+            </button>
+          </div>
+
         </div>
+
+        <!-- Error Message -->
+        ${this.errorMessage ? html`
+          <div
+            class="mt-4 p-3 rounded-lg ${this.isDarkMode ? 'bg-red-900/30 border border-red-800 text-red-400' : 'bg-red-50 border border-red-200 text-red-700'} text-sm"
+            role="alert"
+          >
+            ⚠️ ${this.errorMessage}
+          </div>
+        ` : ''}
+
+        <!-- Visual Indicator -->
+        ${this.isActive ? html`
+          <div class="mt-4 flex items-center justify-center gap-2">
+            <div class="flex gap-1">
+              <div class="w-2 h-2 ${this.isDarkMode ? 'bg-blue-500' : 'bg-blue-600'} rounded-full animate-pulse"></div>
+              <div class="w-2 h-2 ${this.isDarkMode ? 'bg-blue-500' : 'bg-blue-600'} rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+              <div class="w-2 h-2 ${this.isDarkMode ? 'bg-blue-500' : 'bg-blue-600'} rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+            </div>
+            <span class="${this.isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-xs">
+              Active
+            </span>
+          </div>
+        ` : ''}
       </div>
     `;
+  }
+
+  /**
+   * Convert frequency to nearest note name
+   */
+  getNoteFromFrequency(frequency) {
+    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const a4 = 440;
+    const halfSteps = 12 * Math.log2(frequency / a4);
+    const noteIndex = Math.round(halfSteps) % 12;
+    const octave = Math.floor((Math.round(halfSteps) + 9) / 12) + 4;
+    return `${noteNames[(noteIndex + 12) % 12]}${octave}`;
   }
 }
 
